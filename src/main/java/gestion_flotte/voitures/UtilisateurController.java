@@ -1,7 +1,10 @@
 package gestion_flotte.voitures;
 
+import gestion_flotte.tools.Util;
 import gestion_flotte.voitures.entities.Utilisateur;
 import gestion_flotte.voitures.services.UtilisateurService;
+
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,16 +22,19 @@ public class UtilisateurController {
   private UtilisateurService service;
 
   @PostMapping
-  public ResponseEntity<HttpStatus> auth(@RequestBody Utilisateur utilisateur) {
-    System.out.println(utilisateur);
+  public ResponseEntity<Map<String, Object>> auth(@RequestBody Utilisateur utilisateur) {
+    Map<String, Object> response = Util.getDefaultResponse();
     try {
       Optional<Utilisateur> user = service.findByNameAndPassword(utilisateur);
       if (user.isPresent()) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        response.put("data", user.get());
+        return new ResponseEntity<>(response,HttpStatus.OK);
       }
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      response.put("error", "Mot de passe ou login incorrect");
+      return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
     } catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      response.put("error", e.getMessage());
+      return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

@@ -1,5 +1,6 @@
 package gestion_flotte.voitures;
 
+import gestion_flotte.tools.Util;
 import gestion_flotte.voitures.entities.Marque;
 import gestion_flotte.voitures.entities.Vehicule;
 import gestion_flotte.voitures.services.VoitureService;
@@ -24,8 +25,15 @@ public class VoitureController {
   private VoitureService voitureService;
 
   @GetMapping
-  public List<Vehicule> list() {
-    return voitureService.list();
+  public ResponseEntity<Map<String, Object>> list() {
+    Map<String, Object> response = Util.getDefaultResponse();
+    try {
+      response.put("data", voitureService.list());
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (Exception e) {
+      response.put("error", e.getMessage());
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @GetMapping("/hello")
@@ -34,45 +42,71 @@ public class VoitureController {
   }
 
   @GetMapping("/{id}")
-  public Optional<Vehicule> findById(@PathVariable("id") String id) {
-    return voitureService.findById(id);
+  public ResponseEntity<Map<String, Object>> findById(
+    @PathVariable("id") String id
+  ) {
+    Map<String, Object> response = Util.getDefaultResponse();
+    try {
+      Optional<Vehicule> vehicule = voitureService.findById(id);
+      if (vehicule.isPresent()) {
+        response.put("data", vehicule.get());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+      }
+      response.put("error", "Vehicule inexistant");
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    } catch (Exception e) {
+      response.put("error", e.getMessage());
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @PostMapping
-  public ResponseEntity<Vehicule> insert(@RequestBody Vehicule vehicule) {
+  public ResponseEntity<Map<String, Object>> insert(
+    @RequestBody Vehicule vehicule
+  ) {
+    Map<String, Object> response = Util.getDefaultResponse();
     try {
       Vehicule inserted = voitureService.insert(vehicule);
-      return new ResponseEntity<>(inserted, HttpStatus.CREATED);
+      response.put("data", inserted);
+
+      return new ResponseEntity<>(response, HttpStatus.CREATED);
     } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+      response.put("error", e.getMessage());
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Vehicule> update(
+  public ResponseEntity<Map<String, Object>> update(
     @PathVariable("id") String id,
     @RequestBody Vehicule vehicule
   ) {
-    Optional<Vehicule> to_update = voitureService.findById(id);
-    if (to_update.isPresent()) {
-      Vehicule updated = to_update.get();
-      updated.setMarque(new Marque(vehicule.getMarque().getIdMarque()));
-      updated.setMatricule(vehicule.getMatricule());
-      return new ResponseEntity<Vehicule>(
-        voitureService.insert(updated),
-        HttpStatus.OK
-      );
+    Map<String, Object> response = Util.getDefaultResponse();
+    try {
+      Optional<Vehicule> to_update = voitureService.findById(id);
+      if (to_update.isPresent()) {
+        Vehicule updated = to_update.get();
+        updated.setMarque(new Marque(vehicule.getMarque().getIdMarque()));
+        updated.setMatricule(vehicule.getMatricule());
+        response.put("data", voitureService.insert(updated));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+      }
+      response.put("error", "Vehicule inexistant");
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    } catch (Exception e) {
+      response.put("error", e.getMessage());
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<HttpStatus> deleteById(@PathVariable("id") String id) {
+  public ResponseEntity<Map<String,Object>> deleteById(@PathVariable("id") String id) {
+    Map<String, Object> response = Util.getDefaultResponse();
     try {
       voitureService.deleteById(id);
-      return new ResponseEntity<>(HttpStatus.OK);
+      return new ResponseEntity<>(response,HttpStatus.OK);
     } catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

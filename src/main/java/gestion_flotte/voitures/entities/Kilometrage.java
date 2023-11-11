@@ -22,6 +22,12 @@ public class Kilometrage {
   double debutKm;
   double finKm;
 
+  public void update(Kilometrage updated){
+    setDate(updated.getDate());
+    setVehicule(updated.getVehicule());
+    setDebutKm(updated.getDebutKm());
+    setFinKm(updated.getFinKm());
+  }
   public int getIdKilometrage() {
     return idKilometrage;
   }
