@@ -1,13 +1,13 @@
 package gestion_flotte.voitures;
 
-import gestion_flotte.tools.Util;
-import gestion_flotte.voitures.entities.Utilisateur;
+import gestion_flotte.voitures.auth.AuthenticationRequest;
+import gestion_flotte.voitures.auth.RegisterRequest;
+import gestion_flotte.voitures.services.AuthenticationService;
 import gestion_flotte.voitures.services.UtilisateurService;
-
+import gestion_flotte.voitures.tools.Util;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,26 +15,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/welcome")
 public class UtilisateurController {
 
   @Autowired
-  private UtilisateurService service;
+  private AuthenticationService service;
 
-  @PostMapping
-  public ResponseEntity<Map<String, Object>> auth(@RequestBody Utilisateur utilisateur) {
+  @PostMapping("/register")
+  public ResponseEntity<Map<String, Object>> register(
+    @RequestBody RegisterRequest request
+  ) {
     Map<String, Object> response = Util.getDefaultResponse();
-    try {
-      Optional<Utilisateur> user = service.findByNameAndPassword(utilisateur);
-      if (user.isPresent()) {
-        response.put("data", user.get());
-        return new ResponseEntity<>(response,HttpStatus.OK);
-      }
-      response.put("error", "Mot de passe ou login incorrect");
-      return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
-    } catch (Exception e) {
-      response.put("error", e.getMessage());
-      return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    response.put("response", service.register(request));
+    return new ResponseEntity<Map<String, Object>>(
+      response,
+      HttpStatusCode.valueOf(400)
+    );
+  }
+
+  @PostMapping("/auth")
+  public ResponseEntity<Map<String, Object>> auth(
+    @RequestBody AuthenticationRequest request
+  ) {
+    Map<String, Object> response = Util.getDefaultResponse();
+    response.put("response", service.authenticate(request));
+    return new ResponseEntity<Map<String, Object>>(
+      response,
+      HttpStatusCode.valueOf(400)
+    );
   }
 }

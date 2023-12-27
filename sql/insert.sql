@@ -18,7 +18,7 @@ INSERT INTO kilometrage (idvehicule, date, debutkm, finkm) VALUES
 
 -- Insertion de données réelles dans la table utilisateur
 
-INSERT INTO utilisateur (login, motdepasse) VALUES
-('john_doe', 'motdepasse123'), -- Utilisateur : John Doe
-('jane_smith', 'mdpSecret456'), -- Utilisateur : Jane Smith
-('robert_adams', 'adamsPass789'); -- Utilisateur : Robert Adams
+INSERT INTO utilisateur (login, motdepasse,role) VALUES
+('john_doe', 'motdepasse123','USER'), -- Utilisateur : John Doe
+('jane_smith', 'mdpSecret456','ADMIN'), -- Utilisateur : Jane Smith
+('robert_adams', 'adamsPass789','USER'); -- Utilisateur : Robert Adams

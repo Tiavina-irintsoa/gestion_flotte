@@ -1,10 +1,12 @@
 package gestion_flotte.voitures.services;
 
-import gestion_flotte.voitures.entities.Utilisateur;
-import gestion_flotte.voitures.repositories.UtilisateurRepository;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import gestion_flotte.voitures.entities.Utilisateur;
+import gestion_flotte.voitures.repositories.UtilisateurRepository;
 
 @Service
 public class UtilisateurService {

@@ -17,5 +17,6 @@ create table kilometrage(
 create table utilisateur(
     idutilisateur serial primary key, 
     login varchar, 
-    motdepasse varchar
+    motdepasse varchar, 
+    role varchar
 );

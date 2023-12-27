@@ -1,8 +1,10 @@
 package gestion_flotte.voitures;
 
-import java.util.List;
+import gestion_flotte.voitures.entities.Kilometrage;
+import gestion_flotte.voitures.services.KilometrageService;
+import gestion_flotte.voitures.tools.Util;
+import java.util.Map;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.Map;
-import gestion_flotte.tools.Util;
-import gestion_flotte.voitures.entities.Kilometrage;
-import gestion_flotte.voitures.entities.Marque;
-import gestion_flotte.voitures.entities.Kilometrage;
-import gestion_flotte.voitures.services.KilometrageService;
 
 @RestController
 @RequestMapping("/kilometrages")
@@ -103,11 +99,13 @@ public class KilometrageController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Map<String,Object>> deleteById(@PathVariable("id") String id) {
+  public ResponseEntity<Map<String, Object>> deleteById(
+    @PathVariable("id") String id
+  ) {
     Map<String, Object> response = Util.getDefaultResponse();
     try {
       service.deleteById(id);
-      return new ResponseEntity<>(response,HttpStatus.OK);
+      return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
